@@ -62,9 +62,34 @@ const { data, error } = await supabase
 - A table has rows and columns
 - The model of what we want to create
 - Add the name in snake_case
-- By adding RLS, the table won't be accessible until a policy is written to open it up
 
 ### RLS (Row Level Security)
+
+- By adding RLS to the table, the table won't be accessible until a policy is written to open it up
+- We, as admin, need to specify who can read/write to that table
+- To create a RLS policy, go to authentication > policy > select table > new policy > get started quickly | full customization
+
+```sql
+-- enable read access to everyone
+
+CREATE POLICY "policy_name"
+-- on schema.table (schema:public, table:clients)
+ON public.clients
+-- SELECT = READ
+FOR SELECT USING (
+    true
+);
+```
+
+```sql
+-- Enable insert access for auth users only
+
+CREATE POLICY "policy_name"
+ON public.clients
+FOR INSERT
+TO authenticated
+WITH CHECK (true);
+```
 
 ### Authentication
 
