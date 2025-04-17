@@ -64,13 +64,18 @@ const { data, error } = await supabase
 
 ## Course
 
-### Tables
+### 1. Tables
 
-- A table has rows and columns
+- A table has rows (records/entries) and columns (fields/properties)
 - The model of what we want to create
 - Add the name in snake_case
+- Table structure:
+  - primary keys: usually `id UUID`
+  - foreigns keys: relationships to other tables
+  - constraints: e.g., `NOT NULL`, `UNIQUE`
+  - default values: e.g.`now()`, `gen_random_uuid()`
 
-### RLS (Row Level Security)
+### 2. RLS (Row Level Security)
 
 - By adding RLS to the table, the table won't be accessible until a policy is written to open it up
 - We, as admin, need to specify who can read/write to that table
@@ -165,13 +170,17 @@ TO authenticated
 USING (auth.uid() = user_id)
 ```
 
-### Authentication
+### 3. Authentication
+
+- For adding the providers, you need to have the OAuth `CLIENT_ID` and `CLIENT_SECRET`
 
 ### User management
 
 ### Recover password
 
 ### E-mails templates
+
+- To edit them, go to /authentication, on the sidebar, configuration (section)/emails/templates
 
 ### URL Configuration
 
