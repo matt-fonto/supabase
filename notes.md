@@ -55,6 +55,13 @@ const { data, error } = await supabase
 
 - Supabase creates REST and GraphQL APIs automatically for database tables
 
+### Schema
+
+- It's a namespace inside your PostgreSQL that orgniazes db objects -- tables, views, functions
+- Default schema: `public`, all tables go here unless specified otherwise
+- Useful for modularization: separate user-facing data, admin tables, or external integrations
+- Each schema has its own permissions and RLS policies
+
 ## Course
 
 ### Tables
@@ -68,6 +75,25 @@ const { data, error } = await supabase
 - By adding RLS to the table, the table won't be accessible until a policy is written to open it up
 - We, as admin, need to specify who can read/write to that table
 - To create a RLS policy, go to authentication > policy > select table > new policy > get started quickly | full customization
+
+```sql
+-- basic policy structure
+CREATE POLICY "policy_name"
+ON schema.table
+-- the actions
+-- FOR: {action}
+FOR { SELECT | INSERT | UPDATE | DELETE }
+-- TO: {role}: authenticated, anon, etc
+TO {role}
+-- USING: for SELECT, UPDATE, DELETE
+USING (
+  condition
+)
+-- WITH CHECK: only for INSERT, UPDATE
+WITH CHECK (
+  condition
+);
+```
 
 ```sql
 -- enable read access to everyone
@@ -87,8 +113,56 @@ FOR SELECT USING (
 CREATE POLICY "policy_name"
 ON public.clients
 FOR INSERT
+-- to <role>
 TO authenticated
 WITH CHECK (true);
+```
+
+#### Most Common RLS policies
+
+- Authenticated users read their own data
+
+```sql
+CREATE POLICY "Users can view their own data"
+ON public.schema
+FOR SELECT
+-- TO: role
+TO authenticated
+-- auth.uid: the authenticated user's id (supabase auth)
+-- user_id: column in table that stores which user "owns" that row
+USING (auth.uid() = user_id);
+```
+
+- Authenticated users can update their own data
+
+```sql
+CREATE POLICY "Update own profile"
+ON public.profiles
+FOR UPDATE
+TO authenticated
+-- USING (authenticated users'id = the column of the user)
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
+```
+
+- Users can insert data tied to their UID
+
+```sql
+CREATE POLICY "Insert own data"
+ON public.messages
+FOR INSERT
+TO authenticated
+USING (auth.uid() = user_id);
+```
+
+- Users can delete their own data
+
+```sql
+CREATE POLICY "Delete own messages"
+ON public.messages
+FOR DELETE
+TO authenticated
+USING (auth.uid() = user_id)
 ```
 
 ### Authentication
