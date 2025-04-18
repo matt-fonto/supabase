@@ -173,10 +173,49 @@ USING (auth.uid() = user_id)
 ### 3. Authentication
 
 - For adding the providers, you need to have the OAuth `CLIENT_ID` and `CLIENT_SECRET`
+- You will need to add to the `createServerClient`, the public URL and the anon public key
+  - You can find these on settings/API
 
-### User management
+### 4. API Docs
 
-### Recover password
+- One other very important path is **API Docs**
+- There in you find:
+  - how to connect to your project
+  - the different api keys
+  - how to manage a user
+  - the different supabase commands to CRUD your different tables
+
+### 5. User management
+
+- Supabase manages a built-in `auth.users` table
+- Each user has: id, email, created_at, user_metadata, app_metadata
+- It's common to create a separate `public.profiles` table for app-specific user info. Then, you can extend the base user. Link it to `auth.users` using the same `id`
+
+```sql
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  username TEXT,
+  avatar_url TEXT
+);
+```
+
+### 6. Recover password
+
+````js
+// forgot-password-form
+try {
+    // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/update-password`,
+    })
+    if (error) throw error
+    setSuccess(true)
+  } catch (error: unknown) {
+    setError(error instanceof Error ? error.message : 'An error occurred')
+  } finally {
+    setIsLoading(false)
+}
+```
 
 ### E-mails templates
 
@@ -207,3 +246,4 @@ USING (auth.uid() = user_id)
 ### Edge-functions
 
 ### Webhooks
+````
