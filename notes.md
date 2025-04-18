@@ -201,7 +201,7 @@ CREATE TABLE profiles (
 
 ### 6. Recover password
 
-````js
+```js
 // forgot-password-form
 try {
     // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
@@ -220,6 +220,9 @@ try {
 ### E-mails templates
 
 - To edit them, go to /authentication, on the sidebar, configuration (section)/emails/templates
+- Templates: confirm signup, invite user, magic link, change email address, reset password
+- We can config the subject heading and the message body
+- Some cool templates: see `email-templates.md`
 
 ### URL Configuration
 
@@ -246,4 +249,7 @@ try {
 ### Edge-functions
 
 ### Webhooks
-````
+
+```
+
+```
