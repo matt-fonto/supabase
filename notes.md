@@ -217,16 +217,67 @@ try {
 }
 ```
 
-### E-mails templates
+### 7. E-mails templates
 
 - To edit them, go to /authentication, on the sidebar, configuration (section)/emails/templates
 - Templates: confirm signup, invite user, magic link, change email address, reset password
 - We can config the subject heading and the message body
 - Some cool templates: see `email-templates.md`
 
-### URL Configuration
+### 8. URL Configuration
 
-### Read, insert or delete
+- Starts with localhost:3000, but once we're in prod, it should be the base URL of the website
+
+### 9. Read, insert or delete
+
+```js
+// read
+const { data, error } = await supabase
+  .from("courses")
+  .select("*") // what will return from the query (like a serializer)
+  .eq("user_id", user.id);
+
+// insert
+const { error } = await supabase
+  .from("courses")
+  .insert([{ title: "Example", user_id: user.id }]);
+
+// update
+const { error } = await supabase
+  .from("courses")
+  .update({ title: "Example 2" })
+  .eq("id", courseId)
+  .eq("user_id", user.id);
+
+// delete
+const { error } = await supabase
+  .from("courses")
+  .delete()
+  .eq("id", courseId)
+  .eq("user_id", user.id);
+```
+
+- Also, check the API Docs/tables and views to get ready-made supabase queries based on the table and CRUD need
+
+### 9.1 Filtering
+
+```js
+const { data, error } = await supabase
+  .from("courses")
+  .select("*")
+
+  // filters
+  .eq("column", "equal to")
+  .gt("column", "greater than");
+  .lt("column", "less than")
+  .gte("column", "greater than or equal to")
+  .lte("column", "less than or equal to")
+  .like("column", "case sensitive")
+  .ilike("column", "case insensitive")
+  .is("column", null)
+  .in("column", ["Array", "Values"])
+  .neq("column", "not equal to")
+```
 
 ### Subscriptions
 
