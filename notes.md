@@ -231,7 +231,7 @@ try {
 ### 9. Read, insert or delete
 
 ```js
-// read
+// read: select
 const { data, error } = await supabase
   .from("courses")
   .select("*") // what will return from the query (like a serializer)
@@ -240,7 +240,7 @@ const { data, error } = await supabase
 // insert
 const { error } = await supabase
   .from("courses")
-  .insert([{ title: "Example", user_id: user.id }]);
+  .insert({ title: "Example", user_id: user.id });
 
 // update
 const { error } = await supabase
@@ -279,9 +279,92 @@ const { data, error } = await supabase
   .neq("column", "not equal to")
 ```
 
-### Subscriptions
+### 10. Subscriptions
 
-### Relations
+1. Enable realtime (must be enabled per table and event (insert, update, delete))
+
+- Dashboard -> database -> replication -> enable realtime -> add table
+
+2. Create subscription: `.channel()` on `.on()`:
+
+```js
+const channel = supabase
+  .channel("realtime:courses")
+  .on(
+    "postgres_changes", //
+    {
+      event: "*",
+      schema: "public",
+      table: "courses",
+      // we could add a filter here
+    },
+    (payload) => {
+      // do something with the updated data
+    }
+  )
+  .subscribe();
+
+// Event shape
+{
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE',
+  new: {},    // new row (insert/update)
+  old: {},    // old row (update/delete)
+  table: 'courses'
+}
+```
+
+### 11. Relations
+
+1. Foreign Keys: defines relationships between tables
+
+```sql
+-- column_name <type> REFERENCES referenced_table(referenced_column)
+user_id UUID REFERENCES users(id)
+```
+
+2. Types of relations
+
+- One-to-one: user has one profile
+- Both tables use the same primary key
+- Foreign key is also PRIMARY KEY or UNIQUE
+
+```sql
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE
+);
+
+CREATE TABLE profiles (
+  -- one to one
+  id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  username TEXT,
+  avatar_url TEXT
+)
+```
+
+- One-to-many: user has many posts
+- Foreign key is not unique, allows many entries with same reference
+
+```sql
+CREATE TABLE posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  -- not unique: one to many
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT
+);
+
+```
+
+- Many-to-many: posts have many comments
+- A join table with two foreign keys and composite primary key
+
+```sql
+CREATE TABLE user_courses (
+  user_id UUID REFERENCES users(id),
+  course_id UUID REFERENCES courses(id),
+  PRIMARY_KEY (user_id, course_id)
+);
+```
 
 ### Functions
 
