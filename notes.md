@@ -416,7 +416,30 @@ $$
 const { data } = await supabase.rpc("increment", { row_id: "123" });
 ```
 
-### Triggers
+### 13. Triggers
+
+- We can call our functions with triggers
+- They call our functions on a given specific moment, e.g., `BEFORE INSERT`, `BEFORE UPDATE`, etc
+- It can be "BEFORE" or "AFTER" a specific event
+
+name | table | function | events
+
+- One interesting example is, everytime we create a user with supabase auth.user, we could have a trigger invokes a function to create the user on our custom user table as well
+
+```sql
+CREATE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.users (id, email)
+  VALUES (NEW.id, NEW.email);
+  RETURN NEW;
+END;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION handle_new_user();
+```
 
 ### Schemas
 
