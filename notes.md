@@ -315,6 +315,8 @@ const channel = supabase
 
 ### 11. Relations
 
+[Supabase video](https://www.youtube.com/watch?v=WOX9g1s43-g)
+
 1. Foreign Keys: defines relationships between tables
 
 ```sql
@@ -359,14 +361,60 @@ CREATE TABLE posts (
 - A join table with two foreign keys and composite primary key
 
 ```sql
+-- convention when creating a join table is table1name_table2name ()
 CREATE TABLE user_courses (
   user_id UUID REFERENCES users(id),
   course_id UUID REFERENCES courses(id),
+  -- composite primary key
   PRIMARY_KEY (user_id, course_id)
 );
 ```
 
-### Functions
+- Reading foreign tables
+
+```js
+const { data, error } = await supabase.from("orders").select(`
+    some_column,
+    other_table (
+      foreign_key
+    )
+  `);
+```
+
+### 12. Functions
+
+- Functions run when some change is done to the database
+- Reusable block of SQL/logic
+- We could, for instance, increase the count of "views" everytime a fetch request is done to "view" the order
+
+```sql
+CREATE FUNCTION add(a INT, b INT)
+RETURN INT AS $$
+BEGIN
+  RETURN a + b;
+END;
+
+$$ LANGUAGE plpgsql;
+```
+
+- Increment function
+
+```sql
+CREATE FUNCTION increment(row_id INT)
+RETURNS void as
+$$
+  UPDATE table_name
+  SET field_name = field_name + 1
+  WHERE id = row_id;
+$$
+```
+
+- We can then call the function from within our app
+
+```js
+// supabase.rpc("function_name", {args})
+const { data } = await supabase.rpc("increment", { row_id: "123" });
+```
 
 ### Triggers
 
