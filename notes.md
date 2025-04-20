@@ -510,9 +510,39 @@ CREATE POLICY objects_delete_policy ON storage.objects FOR DELETE
   USING (auth.role() = "authenticated");
 ```
 
-### Logs
+### 16. Logs
 
-### Extensions
+- Helps us to troubleshoot if any error happens in our application
+- We can track user activity
+- We can also improve performance by identifying how long each query is taking
+- Types of logs:
+
+  - Auth logs: user signups, logins, token refreshes
+  - Database logs: executed SQL queries, slow queries, errors
+  - Function logs: output/errors from edge functions
+  - Storage logs: file uploads, deletions, signed URL access
+
+- Each log includes:
+  - Timestamp
+  - Log level (info, warn, error)
+  - Source (auth, db, storage, edge function)
+  - Message (e.g., query text, function output)
+
+### 17. Extensions
+
+- Optional plugins that add extra features to PostgreSQL
+- Enable things like UUID generation, GIS support, full-text search, cryptography, etc
+- Dashboard -> database -> extensions
+
+| Extension | Use case                                   |
+| --------- | ------------------------------------------ |
+| pgcrypto  | Generate UUIDs, encrypt/decrypt data       |
+| uuid-ossp | UUID generation (uuid_generate_v4())       |
+| postgis   | Geospatial queries & GIS support           |
+| pg_trgm   | Text similarity, fuzzy search              |
+| citext    | Case-insensitive text columns              |
+| http      | Make HTTP requests from SQL                |
+| plv8      | Write functions in JavaScript (if enabled) |
 
 ### Realtime
 
