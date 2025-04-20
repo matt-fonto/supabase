@@ -441,7 +441,22 @@ FOR EACH ROW
 EXECUTE FUNCTION handle_new_user();
 ```
 
-### Schemas
+### 14. Schemas
+
+- Postgres uses schemas, which is as name container for database
+- A namespace which contains one or more objects
+- Helps to separate different parts of the applications
+
+```sql
+CREATE SCHEMA sales;
+
+-- customers is a table inside the sales schema
+CREATE TABLE sales.customers (
+  id uuid not null primary key,
+  name text,
+  email text
+);
+```
 
 ### Storage
 
