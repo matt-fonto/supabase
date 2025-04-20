@@ -458,7 +458,57 @@ CREATE TABLE sales.customers (
 );
 ```
 
-### Storage
+### 15. Storage
+
+- Where docs and images are stored
+- Buckets:
+
+  - top-level container for files
+  - each file lives under a path in a specific bucket
+  - can be public or private
+
+- Objects:
+
+  - files stored inside buckets
+
+- Storage is also a schema
+
+```js
+// Upload
+await supabase.storage.from("avatars").upload("user1/avatar.png", file);
+
+// Download URL
+const { data } = supabase.storage
+  .from("avatars")
+  .getPublicUrl("user1/avatar.png");
+
+// Delete
+await supabase.storage.from("avatars").remove(["user1/avatar.png"]);
+```
+
+- Creating RLS policies
+
+```sql
+-- Enable row-level security
+
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+-- Policy for SELECT operations
+CREATE POLICY objects_select_policy ON storage.objects FOR SELECT
+  USING (auth.role() = "authenticated");
+
+-- Policy for INSERT operations WITCH CHECK !
+CREATE POLICY objects_insert_policy ON storage.objects FOR INSERT
+  WITH CHECK (auth.role() = "authenticated");
+
+-- Policy for UPDATE
+CREATE POLICY objects_update_policy ON storage.objects FOR UPDATE
+  USING (auth.role() = "authenticated");
+
+-- Policy for DELETE
+CREATE POLICY objects_delete_policy ON storage.objects FOR DELETE
+  USING (auth.role() = "authenticated");
+```
 
 ### Logs
 
