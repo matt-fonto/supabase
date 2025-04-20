@@ -544,12 +544,11 @@ CREATE POLICY objects_delete_policy ON storage.objects FOR DELETE
 | http      | Make HTTP requests from SQL                |
 | plv8      | Write functions in JavaScript (if enabled) |
 
-### Realtime
+### 18. Realtime
+
+- Enables live updates via websockets when data changes in your DB (INSERT, UPDATE, DELETE)
+- Database -> replication and enable it
 
 ### Edge-functions
 
 ### Webhooks
-
-```
-
-```
