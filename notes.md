@@ -549,6 +549,48 @@ CREATE POLICY objects_delete_policy ON storage.objects FOR DELETE
 - Enables live updates via websockets when data changes in your DB (INSERT, UPDATE, DELETE)
 - Database -> replication and enable it
 
-### Edge-functions
+### 19. Edge-functions
+
+- Serverless functions deployed at the edge, written in TS (via Deno)
+- Used for custom backend logic, webhooks, auth middleware, etc
+- Step up
+
+```bash
+# creates a new function in supabase/functions/hello/index.ts
+supabase functions new hello
+```
+
+```js
+import { serve } from "https://deno.land/std/http/server.ts";
+
+server(async (req) => {
+  return new Response("Hello from supabase edge functions", {
+    headers: {"Content-Type": "text/plain"};
+  })
+})
+```
+
+- Deploy
+
+```bash
+supabase functions deploy hello
+```
+
+- Call the function
+
+```js
+const res = await fetch("/functions/v1/hello");
+
+// or from the client
+await supabase.functions.invoke("hello", {
+  body: { message: "Hi" },
+});
+```
+
+- Use cases:
+  - Custom APIs
+  - Stripe webhooks
+  - Middleware logic
+  - Scheduled tasks
 
 ### Webhooks
