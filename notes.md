@@ -593,4 +593,53 @@ await supabase.functions.invoke("hello", {
   - Middleware logic
   - Scheduled tasks
 
-### Webhooks
+### 20. Webhooks
+
+- HTTP callbacks triggered by events (e.g., auth sign-up, insert into a table)
+- Supabase sends a POST request to your endpoint with event data
+
+#### 20.1 Examples
+
+1. Welcome email on user signup
+
+- Go to supabase dashboard -> auth -> webhooks
+- Add endpoint: `https://your-domain.com/api/welcome`
+
+```js
+// next.js route
+// app/api/welcome/route.ts
+
+export async function POST(req: Request) {
+  const { email, user_metadata } = await req.json();
+
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_KEY}`,
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({
+      to: email,
+      from: "welcome@yourapp.com",
+      subject: "Welcome",
+      html: `<p>Hello ${user_metadata?.name || "there"}, welcome aboard!</p>`,
+    }),
+  });
+
+  return new Response(null, { status: 204 });
+}
+```
+
+2. Notify slack on new feedback
+3. Trigger automation (e.g., make/zapier) on purchase
+
+### 21. Self-hosting Supabase
+
+- Supabase is open source, so, we can run it fully on our own infra
+  - PostgreSQL: core db
+  - PostgREST: auto REST API
+  - Realtime: websocket server
+  - Storage API
+  - Supabase studio
+  - Authentication: GoTrue
+  - Edge runtime
