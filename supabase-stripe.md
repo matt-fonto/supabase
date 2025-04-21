@@ -117,8 +117,33 @@ function SubscribeButton({ userId }) {
 }
 ```
 
-```js
+- Setup webhook
 
+```js
+// api/stripe/route.ts
+
+export async function POST(request: Request) {
+  const body = request.text();
+  const signature = headers().get("Stripe-Signature");
+  let event: Stripe.Event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SINGING_SECRET
+    );
+  } catch (error) {
+    console.log(error);
+    return new NextResponse("webhook error", { status: 400 });
+  }
+
+  if (
+    event.type === "checkout.session.completed" &&
+    event.data.object.payment.status === "paid"
+  ) {
+  }
+}
 ```
 
 - Create product on stripe
